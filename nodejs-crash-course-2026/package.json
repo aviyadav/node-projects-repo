@@ -1,0 +1,17 @@
+{
+  "name": "nodejs-crash-course-2026",
+  "version": "1.0.0",
+  "description": "node js crash course code",
+  "license": "MIT",
+  "author": "Avinash",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file=.env server2.js",
+    "dev": "nodemon --env-file=.env server2.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.11"
+  }
+}

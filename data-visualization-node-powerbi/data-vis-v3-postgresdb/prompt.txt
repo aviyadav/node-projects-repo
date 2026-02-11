@@ -1,0 +1,7 @@
+The requirement is to build a prototype in node and react that displays data from a database table in tabular manner. In addition there are conditions or check definitions or criteria, which on selection runs the check agains the dataset and create a visualization in the same page. The user can then choose points from the vualization and the rendered table should reflect the datapoint choosen in visualization. Assume any tabular dataset for the prototype and the chart option. 
+
+
+
+npm run setup  # Install all dependencies
+npm start      # Start backend
+cd client && npm start  # Start frontend
