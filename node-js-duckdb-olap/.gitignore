@@ -1,0 +1,27 @@
+# Node.js
+node_modules/
+package-lock.json
+npm-debug.log*
+
+# Data and output
+/data/
+*.parquet
+
+# Environment
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# VSCode
+.vscode/
+
+# DuckDB artifacts
+*.duckdb
+*.db
