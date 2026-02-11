@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styled from 'styled-components';
+import React, { useEffect, useRef } from "react";
+import styled from "styled-components";
 
 const PowerBIContainer = styled.div`
   position: relative;
@@ -41,23 +41,13 @@ const LoadingOverlay = styled.div`
   font-size: 0.9rem;
 `;
 
-const ErrorMessage = styled.div`
-  color: #e53e3e;
-  text-align: center;
-  padding: 20px;
-  background: #fed7d7;
-  border-radius: 6px;
-  margin: 10px 0;
-`;
-
-const PowerBIChart = ({ 
-  title, 
-  embedUrl, 
+const PowerBIChart = ({
+  title,
+  embedUrl,
   onChartClick,
   selectedIds,
-  isLoading = false 
+  isLoading = false,
 }) => {
-  const [error, setError] = useState(null);
   const iframeRef = useRef(null);
 
   useEffect(() => {
@@ -65,50 +55,40 @@ const PowerBIChart = ({
     const handleMessage = (event) => {
       try {
         // Handle Power BI selection events
-        if (event.data && event.data.type === 'selection') {
+        if (event.data && event.data.type === "selection") {
           onChartClick(event.data.selectedIds);
         }
       } catch (err) {
-        console.error('Error processing Power BI message:', err);
+        console.error("Error processing Power BI message:", err);
       }
     };
 
-    window.addEventListener('message', handleMessage);
-    return () => window.removeEventListener('message', handleMessage);
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, [onChartClick]);
 
   const handleFrameLoad = () => {
     try {
       // Send selected data to Power BI iframe for highlighting
       if (iframeRef.current && selectedIds.length > 0) {
-        iframeRef.current.contentWindow.postMessage({
-          type: 'highlight',
-          selectedIds: selectedIds
-        }, '*');
+        iframeRef.current.contentWindow.postMessage(
+          {
+            type: "highlight",
+            selectedIds: selectedIds,
+          },
+          "*",
+        );
       }
     } catch (err) {
-      console.error('Error communicating with Power BI frame:', err);
+      console.error("Error communicating with Power BI frame:", err);
     }
   };
-
-  if (error) {
-    return (
-      <PowerBIContainer>
-        <ChartTitle>{title}</ChartTitle>
-        <ErrorMessage>
-          Power BI Error: {error}
-        </ErrorMessage>
-      </PowerBIContainer>
-    );
-  }
 
   return (
     <PowerBIContainer>
       <ChartTitle>{title}</ChartTitle>
       {isLoading && (
-        <LoadingOverlay>
-          Loading Power BI Visualization...
-        </LoadingOverlay>
+        <LoadingOverlay>Loading Power BI Visualization...</LoadingOverlay>
       )}
       <EmbedFrame
         ref={iframeRef}

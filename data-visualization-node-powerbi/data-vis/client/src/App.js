@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import DataTable from './components/DataTable';
-import ChartVisualization from './components/ChartVisualization';
-import PowerBIVisualization from './components/PowerBIVisualization';
-import CheckSelector from './components/CheckSelector';
-import FilterPanel from './components/FilterPanel';
+import React, { useState, useEffect, useCallback } from "react";
+import styled from "styled-components";
+import DataTable from "./components/DataTable";
+import ChartVisualization from "./components/ChartVisualization";
+import PowerBIVisualization from "./components/PowerBIVisualization";
+import CheckSelector from "./components/CheckSelector";
+import FilterPanel from "./components/FilterPanel";
 
 const Container = styled.div`
   max-width: 1400px;
@@ -35,7 +35,7 @@ const ContentGrid = styled.div`
   display: grid;
   grid-template-columns: 1fr;
   gap: 30px;
-  
+
   @media (min-width: 1024px) {
     grid-template-columns: 350px 1fr;
   }
@@ -84,9 +84,9 @@ const StatusText = styled.p`
 
 const ControlButton = styled.button`
   padding: 12px 16px;
-  border: 2px solid ${props => props.active ? '#667eea' : '#e2e8f0'};
-  background: ${props => props.active ? '#667eea' : 'white'};
-  color: ${props => props.active ? 'white' : '#4a5568'};
+  border: 2px solid ${(props) => (props.active ? "#667eea" : "#e2e8f0")};
+  background: ${(props) => (props.active ? "#667eea" : "white")};
+  color: ${(props) => (props.active ? "white" : "#4a5568")};
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s;
@@ -94,7 +94,7 @@ const ControlButton = styled.button`
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  
+
   &:hover {
     border-color: #667eea;
   }
@@ -103,95 +103,101 @@ const ControlButton = styled.button`
 function App() {
   const [data, setData] = useState([]);
   const [chartData, setChartData] = useState([]);
-  const [selectedCheck, setSelectedCheck] = useState('all');
+  const [selectedCheck, setSelectedCheck] = useState("all");
   const [selectedChartPoints, setSelectedChartPoints] = useState([]);
   const [filters, setFilters] = useState({
-    category: 'all',
-    region: 'all',
-    minSales: '',
-    maxSales: ''
+    category: "all",
+    region: "all",
+    minSales: "",
+    maxSales: "",
   });
   const [pagination, setPagination] = useState({
     page: 1,
     limit: 50,
     total: 0,
-    totalPages: 0
+    totalPages: 0,
   });
   const [loading, setLoading] = useState(false);
   const [usePowerBI, setUsePowerBI] = useState(false);
 
-  useEffect(() => {
-    fetchData();
-    fetchChartData();
-  }, [selectedCheck, filters, selectedChartPoints, pagination.page]);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams({
         page: pagination.page,
         limit: pagination.limit,
-        ...filters
+        ...filters,
       });
 
       if (selectedChartPoints.length > 0) {
-        params.append('selectedIds', selectedChartPoints.join(','));
+        params.append("selectedIds", selectedChartPoints.join(","));
       }
 
-      if (selectedCheck !== 'all') {
-        params.append('checkType', selectedCheck);
+      if (selectedCheck !== "all") {
+        params.append("checkType", selectedCheck);
       }
 
       const response = await fetch(`/api/data?${params}`);
       const result = await response.json();
-      
+
       setData(result.data);
-      setPagination(prev => ({
+      setPagination((prev) => ({
         ...prev,
         total: result.total,
-        totalPages: result.totalPages
+        totalPages: result.totalPages,
       }));
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [
+    selectedCheck,
+    filters,
+    selectedChartPoints,
+    pagination.page,
+    pagination.limit,
+  ]);
 
-  const fetchChartData = async () => {
+  const fetchChartData = useCallback(async () => {
     try {
       const params = new URLSearchParams({
         ...filters,
-        checkType: selectedCheck === 'all' ? undefined : selectedCheck
+        checkType: selectedCheck === "all" ? undefined : selectedCheck,
       });
 
       const response = await fetch(`/api/data/chart?${params}`);
       const result = await response.json();
       setChartData(result);
     } catch (error) {
-      console.error('Error fetching chart data:', error);
+      console.error("Error fetching chart data:", error);
     }
-  };
+  }, [selectedCheck, filters]);
+
+  useEffect(() => {
+    fetchData();
+    fetchChartData();
+  }, [fetchData, fetchChartData]);
 
   const handleCheckChange = (checkId) => {
     setSelectedCheck(checkId);
     setSelectedChartPoints([]);
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const handleFilterChange = (newFilters) => {
     setFilters(newFilters);
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
     setSelectedChartPoints([]);
   };
 
   const handleChartPointSelect = (selectedIds) => {
     setSelectedChartPoints(selectedIds);
-    setPagination(prev => ({ ...prev, page: 1 }));
+    setPagination((prev) => ({ ...prev, page: 1 }));
   };
 
   const handlePageChange = (newPage) => {
-    setPagination(prev => ({ ...prev, page: newPage }));
+    setPagination((prev) => ({ ...prev, page: newPage }));
   };
 
   return (
@@ -224,18 +230,23 @@ function App() {
             <ControlButton
               active={usePowerBI}
               onClick={() => setUsePowerBI(!usePowerBI)}
-              style={{ width: '100%', justifyContent: 'center' }}
+              style={{ width: "100%", justifyContent: "center" }}
             >
-              {usePowerBI ? 'Switch to React Charts' : 'Switch to Power BI'}
+              {usePowerBI ? "Switch to React Charts" : "Switch to Power BI"}
             </ControlButton>
           </Section>
 
           <StatusInfo>
             <StatusText>
-              <strong>Total Records:</strong> {pagination.total}<br/>
-              <strong>Current Page:</strong> {pagination.page} of {pagination.totalPages}<br/>
-              <strong>Chart Selection:</strong> {selectedChartPoints.length} points selected<br/>
-              <strong>Chart Engine:</strong> {usePowerBI ? 'Power BI' : 'React'}
+              <strong>Total Records:</strong> {pagination.total}
+              <br />
+              <strong>Current Page:</strong> {pagination.page} of{" "}
+              {pagination.totalPages}
+              <br />
+              <strong>Chart Selection:</strong> {selectedChartPoints.length}{" "}
+              points selected
+              <br />
+              <strong>Chart Engine:</strong> {usePowerBI ? "Power BI" : "React"}
             </StatusText>
           </StatusInfo>
         </Sidebar>
