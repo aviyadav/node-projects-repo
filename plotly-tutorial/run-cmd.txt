@@ -1,0 +1,32 @@
+npm init -y 
+npm install plotly.js-dist-min
+npm install -D typescript vite
+pnpm workflow
+=============
+
+preferred setup
+---------------
+corepack enable
+corepack prepare pnpm@latest --activate
+pnpm install
+pnpm dev
+pnpm build
+pnpm preview
+
+fallback when corepack is not working
+-------------------------------------
+npx pnpm@latest install
+npx pnpm@latest dev
+npx pnpm@latest build
+npx pnpm@latest preview
+
+one-time migration from npm lockfile
+------------------------------------
+npx pnpm@latest import
+rm -f package-lock.json
+npx pnpm@latest dev
+npx pnpm@latest build
+npx pnpm@latest preview
+
+
+[ref - https://www.w3schools.com/js/js_graphics_plotly.asp]
