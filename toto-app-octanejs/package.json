@@ -1,0 +1,21 @@
+{
+  "name": "my-app",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "typecheck": "tsrx-tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "octane": "^0.1.48"
+  },
+  "devDependencies": {
+    "@tsrx/prettier-plugin": "^0.3.128",
+    "@tsrx/typescript-plugin": "^0.3.128",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3",
+    "vite": "^8.2.2"
+  }
+}
